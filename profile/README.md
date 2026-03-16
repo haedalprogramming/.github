@@ -1,6 +1,6 @@
 <div align="center">
 
-# 해달 프로그래밍 (haedalprogramming)
+# 해달 프로그래밍 (haedalprogramming) - PUBLIC
 
 ### 기술로 가치를, 교육으로 미래를 만듭니다
 
