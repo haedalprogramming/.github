@@ -1,0 +1,28 @@
+name: .NET CI
+on:
+  pull_request:
+  push:
+    branches: [$default-branch]
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Use the SDK pinned in this repository; add global.json before enabling this template.
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-${{ runner.arch }}-nuget-v1-${{ hashFiles('**/*.csproj', '**/packages.lock.json', '**/Directory.Packages.props', '**/Directory.Build.props', '**/nuget.config', '**/NuGet.Config', '**/global.json') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-nuget-v1-
+      # Add an explicit solution path if there is more than one solution.
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release

@@ -1,0 +1,1 @@
+{"name":".NET CI · NuGet 캐시와 빌드 재사용","description":"global.json SDK, NuGet 캐시, restore/build/test 분리와 PR concurrency를 사용하는 .NET CI.","categories":["C#"],"filePatterns":["global.json$"]}

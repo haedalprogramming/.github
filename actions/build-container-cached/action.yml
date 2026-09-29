@@ -1,0 +1,50 @@
+name: Build container with scoped cache
+description: Reuse BuildKit layers and expose the digest of the built image.
+inputs:
+  context:
+    description: Build context path.
+    default: .
+  file:
+    description: Dockerfile path.
+    default: Dockerfile
+  platforms:
+    description: Explicit deployment architecture.
+    default: linux/amd64
+  tags:
+    description: Image tags, one per line.
+    required: true
+  scope:
+    description: Cache scope unique to the image and platform in this repository.
+    required: true
+  push:
+    description: Push only after caller authentication and approval gates.
+    default: 'false'
+  load:
+    description: Load a single-platform image for local smoke tests.
+    default: 'false'
+  build-args:
+    description: Non-secret build arguments only.
+    default: ''
+outputs:
+  digest:
+    description: Built image digest.
+    value: ${{ steps.build.outputs.digest }}
+  imageid:
+    description: Built image identifier.
+    value: ${{ steps.build.outputs.imageid }}
+runs:
+  using: composite
+  steps:
+    - uses: docker/setup-buildx-action@v3
+    - id: build
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.file }}
+        platforms: ${{ inputs.platforms }}
+        tags: ${{ inputs.tags }}
+        push: ${{ inputs.push == 'true' }}
+        load: ${{ inputs.load == 'true' }}
+        build-args: ${{ inputs.build-args }}
+        cache-from: type=gha,scope=${{ inputs.scope }}
+        cache-to: type=gha,scope=${{ inputs.scope }},mode=max

@@ -1,0 +1,28 @@
+name: Set up .NET with NuGet cache
+description: Install the requested SDK and cache packages without caching build outputs.
+inputs:
+  dotnet-version:
+    description: SDK version; use this or global-json-file.
+    required: false
+    default: ''
+  global-json-file:
+    description: Path to the repository's global.json.
+    required: false
+    default: ''
+  packages-path:
+    description: NuGet global packages path; must match NUGET_PACKAGES if overridden.
+    required: false
+    default: ~/.nuget/packages
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+        global-json-file: ${{ inputs.global-json-file }}
+    - uses: actions/cache@v4
+      with:
+        path: ${{ inputs.packages-path }}
+        key: ${{ runner.os }}-${{ runner.arch }}-nuget-v1-${{ inputs.dotnet-version }}-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/packages.lock.json', '**/Directory.Packages.props', '**/Directory.Build.props', '**/NuGet.Config', '**/nuget.config', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-nuget-v1-${{ inputs.dotnet-version }}-
