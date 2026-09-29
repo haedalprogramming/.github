@@ -1,0 +1,1 @@
+{"name":"Node CI · 캐시와 PR 중복 실행 방지","description":"npm lockfile 캐시와 PR별 concurrency를 사용하는 Node CI. 프로젝트의 Node 버전과 테스트 명령을 확인하세요.","categories":["JavaScript","TypeScript"],"filePatterns":["package-lock.json$"]}
